@@ -15,6 +15,9 @@ import jakarta.ws.rs.core.Response;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.transaction.TransactionManager;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -155,5 +158,32 @@ public class UserController {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid or expired token.").build();
         }
     }
+
+    @GET
+    @Path("/my-bookings")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMyBookings(@HeaderParam("Authorization") String token) {
+        String email = JwtUtil.extractEmailFromToken(token);
+        User user = User.find("email", email).firstResult();
+
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("User not found").build();
+        }
+
+        // Convert the list of Booking entities to BookingDTOs
+        List<BookingDTO> bookingDTOs = user.getBookings().stream()
+                .map(booking -> new BookingDTO(
+                        booking.id,
+                        booking.getClassId(),
+                        booking.getStudentId(),
+                        booking.getBookingDate(),
+                        booking.getStatus(),
+                        booking.getPaymentStatus()
+                )).collect(Collectors.toList());
+
+        return Response.ok(bookingDTOs).build();
+    }
+
+
 
 }

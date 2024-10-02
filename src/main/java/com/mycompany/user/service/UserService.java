@@ -4,8 +4,6 @@ import com.mycompany.user.util.JwtUtil;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import com.mycompany.user.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,8 +20,6 @@ public class UserService {
     @Inject
     Mailer mailer;
 
-    @Inject
-    EntityManager entityManager;
 
     @ConfigProperty(name = "app.frontend.url")
     String frontendUrl;
@@ -65,11 +61,10 @@ public class UserService {
 
 
     public String getUserRole(String username) {
-        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
-        query.setParameter("email", username);
-        User user = query.getSingleResult();
+        User user = User.find("email", username).firstResult();
         return user != null ? user.getRole() : null;
     }
+
 
     // This method handles password changes when the user knows the current password
     public boolean changePassword(String email, String currentPassword, String newPassword) {

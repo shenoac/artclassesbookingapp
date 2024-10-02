@@ -2,15 +2,14 @@ package com.mycompany.user.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.Password;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
+import java.util.List;
 
 @Entity
 @Table(name = "ecommerceapp_user")
@@ -36,6 +35,9 @@ public class User extends PanacheEntity {
     @NotNull
     public boolean activated = false;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
+
     public static void add(String email, String password, String role, String name) {
         User user = new User();
         user.email = email;
@@ -47,5 +49,13 @@ public class User extends PanacheEntity {
 
     public String getRole() {
         return role;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
     }
 }
