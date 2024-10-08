@@ -1,7 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Parent Project Reference -->
+    <parent>
+        <groupId>com.mycompany</groupId>
+        <artifactId>user-management-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.mycompany</groupId>
     <artifactId>common</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -12,23 +20,26 @@
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.version>3.14.1</quarkus.version> <!-- Specify Quarkus version -->
-        <jakarta.persistence.version>3.1.0</jakarta.persistence.version> <!-- Specify JPA version -->
+        <quarkus.platform.version>3.14.1</quarkus.platform.version> <!-- Quarkus version -->
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+        </dependency>
+
         <!-- Panache Hibernate ORM for Quarkus -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
-            <version>${quarkus.version}</version> <!-- Use the specified Quarkus version -->
         </dependency>
 
         <!-- Jakarta Persistence API (JPA) -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>${jakarta.persistence.version}</version> <!-- Use the specified JPA version -->
         </dependency>
 
         <!-- JSON Web Tokens API -->
@@ -38,23 +49,37 @@
             <version>0.11.5</version>
         </dependency>
 
-        <!-- Annotations for Java5 (Deprecated Warning) -->
+        <!-- Annotations for Java5 (Specific Version) -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations-java5</artifactId>
-            <version>20.1.0</version> <!-- Specify a specific version -->
+            <version>20.1.0</version>
         </dependency>
 
+        <!-- Quarkus Dependency Injection (Arc) -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
-            <version>${quarkus.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Quarkus Maven Plugin -->
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal> <!-- This will handle Quarkus build -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -62,7 +87,6 @@
                 <configuration>
                     <source>21</source> <!-- Use JDK 21 -->
                     <target>21</target> <!-- Use JDK 21 -->
-
                 </configuration>
             </plugin>
         </plugins>
